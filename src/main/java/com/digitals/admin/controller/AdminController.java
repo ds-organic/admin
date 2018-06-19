@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
-import org.apache.lucene.util.CollectionUtil;
 import org.elasticsearch.common.util.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +16,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.digitals.admin.model.User;
+import com.digitals.admin.request.entities.UserRequest;
 import com.digitals.admin.request.entities.UserDetails;
+import com.digitals.admin.svc.AdminService;
+
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/")
 @EnableAspectJAutoProxy(proxyTargetClass=true)
 public class AdminController {
 
+	
+	@Autowired
+	AdminService adminService;
+	
 	private static List<UserDetails> userDetailList =new ArrayList<>();
 	
 	@ApiOperation(value = "Register user details to create user id and password", notes = "The service creates user specific roles and user credentials.", response = String.class,tags={ "Register User", })
@@ -53,5 +61,15 @@ public class AdminController {
 		}
 		}
 		 return new ResponseEntity<String>("Login failed try again", HttpStatus.OK); 	
+	}
+	
+	@RequestMapping(value = "/userRegister", method = RequestMethod.POST,  consumes = MediaType.APPLICATION_JSON)
+	public void registerUser(@RequestBody UserRequest productRequest) {
+		adminService.saveUser(productRequest);
+	}
+	
+	@RequestMapping(value = "/user/getAll", method = RequestMethod.GET,  produces = javax.ws.rs.core.MediaType.APPLICATION_JSON)
+	public List<User> registerUser() {
+		return adminService.getAllUsers();
 	}
 }
